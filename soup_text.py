@@ -7,7 +7,7 @@ import time
 import requests
 
 def send_notice(title, content, url):
-    endpoint_url = 'http://127.0.0.1:8000/api/insert_notice'
+    endpoint_url = 'http://127.0.0.1:8000/sapi/insert_notice'
 
     data={
         'title': title,
@@ -38,18 +38,17 @@ def get_notice_content(notice_url):
     time.sleep(3)  # Wait for the page to load
 
     # Replace with the correct selector
-    content_selector = "div.board-view-content-wrap.board-view-txt"
+    content_selector = "#bo_v_con"
     
     # Find the element and get its text
     content_element = driver.find_element(By.CSS_SELECTOR, content_selector)
     content_text = content_element.text if content_element else "Content not found"
-    print(content_text)
 
     driver.quit() 
     return content_text
 
 # Base URL
-base_url = "https://sw.skku.edu/sw/notice.do"
+base_url = "https://cs.yonsei.ac.kr/bbs/board.php?bo_table=sub5_5"
 
 # Setting up the WebDriver for the main page
 driver = create_headless_driver()
@@ -59,21 +58,27 @@ driver.get(base_url)
 time.sleep(3)  # Wait for the page to load
 
 # Loop through the specified range of li elements
-for i in range(1, 2):
+for i in range(2, 3):
     # Construct the selector for each notice
-    selector = f"div.board-name-list.board-wrap > ul > li:nth-child({i}) > dl > dt > a"
+    title_selector = f"#fboardlist > div > table > tbody > tr:nth-child(1) > td.td_subject > div > a"
+    date_selector = f"#fboardlist > div > table > tbody > tr:nth-child(1) > td.td_datetime.hidden-xs"
 
     try:
-        title_element = driver.find_element(By.CSS_SELECTOR, selector)
+        title_element = driver.find_element(By.CSS_SELECTOR, title_selector)
         title = title_element.text.strip()
-        partial_href = title_element.get_attribute('href')
-        full_notice_url = partial_href
+        date_element = driver.find_element(By.CSS_SELECTOR, date_selector)
+        date = date_element.text.strip()
+        
+        # partial_href = title_element.get_attribute('href')
+        # full_notice_url = partial_href
+        full_notice_url = title_element.get_attribute('href')
 
         # Get the content of the notice
         content = get_notice_content(full_notice_url)
 
         print(f"Notice {i}: {title}")
         print("Content:", content)
+        print("Date:",date)
         print("----")
         send_notice(title, content, full_notice_url)
 

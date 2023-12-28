@@ -3,8 +3,16 @@ from sqlalchemy.orm import Session
 from db.models import Notice
 from db.schemas import NoticeRequest
 
+def get_notice_by_link(db: Session, link: str):
+    return db.query(Notice).filter(Notice.original_link == link).first()
 
-def add_notice(db: Session, data: NoticeRequest) -> Notice:
+
+def add_notice(db: Session, data: NoticeRequest):
+    
+    existing_notice = get_notice_by_link(db, data.original_link)
+    if existing_notice:
+        return False
+
     new_notice = Notice(
         title=data.title,
         content=data.content,

@@ -6,7 +6,7 @@ from typing import List
 from db.session import engine
 from db.models import Base
 from db.session import SessionLocal
-from crawler.crawl import SkkuCrawler
+from crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler
 from db.schemas import  NoticeRequest, NoticeRequestCreate
 from db.crud import add_notice
 
@@ -41,3 +41,13 @@ def post_notice(notice_req: NoticeRequestCreate, db: Session = Depends(get_db)):
         return add_notice(db, notice_req)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/sne")
+def skku():
+    crawler = SnuCrawler()
+    return crawler.crawl()
+
+@app.get("/yonsei")
+def skku():
+    crawler = YonseiCrawler()
+    return crawler.crawl()
