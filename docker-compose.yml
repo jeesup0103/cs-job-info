@@ -22,7 +22,7 @@ services:
       - .:/app
     environment:
       - DATABASE_URL=mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE}
-    command: python /app/crawler/run_crawlers.py
+    command: python -c "from app.crawler.run_crawlers import run_all_crawlers; run_all_crawlers()"
     depends_on:
       db:
         condition: service_healthy

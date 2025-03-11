@@ -79,14 +79,14 @@ def check_chrome():
     except Exception:
         return False
 
-class BaseCrawler:
-    def __init__(self, base_url, school_name):
-        self.base_url = base_url
-        self.school_name = school_name
-        self.db = SessionLocal()
-        logging.info(f"Initialized crawler for {self.school_name} with base URL: {base_url}")
+class ChromeDriverManager:
+    def __init__(self):
+        self.driver = None
 
-    def create_headless_driver(self):
+    def create_driver(self):
+        if self.driver is not None:
+            return self.driver
+
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
@@ -111,7 +111,6 @@ class BaseCrawler:
             else:  # Intel Mac
                 service = Service(ChromeDriverManager().install())
         elif platform.system() == 'Linux':  # Linux (including Docker)
-            # Use environment variables for Chrome and ChromeDriver paths
             chrome_bin = os.getenv('CHROME_BIN', '/usr/bin/chromium')
             chromedriver_path = os.getenv('CHROMEDRIVER_PATH', '/usr/bin/chromedriver')
 
@@ -122,9 +121,23 @@ class BaseCrawler:
         else:  # Windows or others
             service = Service(ChromeDriverManager().install())
 
-        driver = webdriver.Chrome(service=service, options=options)
+        self.driver = webdriver.Chrome(service=service, options=options)
         logging.info(f"Created headless Chrome driver for {platform.system()} {platform.machine()}")
-        return driver
+        return self.driver
+
+    def quit(self):
+        if self.driver:
+            self.driver.quit()
+            self.driver = None
+            logging.info("Chrome driver closed")
+
+class BaseCrawler:
+    def __init__(self, base_url, school_name, driver):
+        self.base_url = base_url
+        self.school_name = school_name
+        self.db = SessionLocal()
+        self.driver = driver  # Use the provided driver instance
+        logging.info(f"Initialized crawler for {self.school_name} with base URL: {base_url}")
 
     def send_notice(self, title, content, url, date, school):
         try:
@@ -163,14 +176,12 @@ class BaseCrawler:
             self.db.close()
 
     def get_notice_content(self, notice_url):
-        driver = None
         try:
             logging.info(f"Fetching content from: {notice_url}")
-            driver = self.create_headless_driver()
-            driver.get(notice_url)
+            self.driver.get(notice_url)
             time.sleep(3)
 
-            content_element = driver.find_element(By.CSS_SELECTOR, self.content_selector)
+            content_element = self.driver.find_element(By.CSS_SELECTOR, self.content_selector)
             content_text = content_element.text if content_element else "Content not found"
             logging.info(f"Successfully retrieved content from {notice_url}")
             return content_text
@@ -178,25 +189,20 @@ class BaseCrawler:
         except Exception as e:
             logging.error(f"Error getting notice content: {e}")
             return "Content not found"
-        finally:
-            if driver:
-                driver.quit()
 
     def crawl(self):
-        driver = None
         try:
             logging.info(f"Starting crawl for {self.school_name}")
-            driver = self.create_headless_driver()
-            driver.get(self.base_url)
+            self.driver.get(self.base_url)
             time.sleep(10)
 
             try:
                 logging.info("Processing notice")
-                title_element = driver.find_element(By.CSS_SELECTOR, self.title_selector)
+                title_element = self.driver.find_element(By.CSS_SELECTOR, self.title_selector)
                 title = title_element.text.strip()
                 logging.info(f"Found title: {title}")
 
-                date_element = driver.find_element(By.CSS_SELECTOR, self.date_selector)
+                date_element = self.driver.find_element(By.CSS_SELECTOR, self.date_selector)
                 date = date_element.text.strip()
                 logging.info(f"Found date: {date}")
 
@@ -219,27 +225,25 @@ class BaseCrawler:
 
         except Exception as e:
             logging.error(f"Error during crawling: {e}")
-        finally:
-            if driver:
-                driver.quit()
-                logging.info("Crawler finished")
 
 
 class SkkuCrawler(BaseCrawler):
-    def __init__(self):
+    def __init__(self, driver):
         super().__init__(
             base_url="https://sw.skku.edu/sw/notice.do",
-            school_name="성균관대학교"
+            school_name="성균관대학교",
+            driver=driver
         )
         self.content_selector = "div.board-view-content-wrap.board-view-txt"
         self.title_selector = "div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dt > a"
         self.date_selector = "div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dd > ul > li:nth-child(3)"
 
 class SnuCrawler(BaseCrawler):
-    def __init__(self):
+    def __init__(self, driver):
         super().__init__(
             base_url="https://cse.snu.ac.kr/community/notice?tag=%EC%B1%84%EC%9A%A9%EC%A0%95%EB%B3%B4",
-            school_name="서울대학교"
+            school_name="서울대학교",
+            driver=driver
         )
         self.content_selector = (
             "body > main > div > div > div.bg-neutral-50.px-5.pt-9.sm\\:pl-\\[100px\\].sm\\:pr-\\[340px\\].pb-\\[150px\\] > "
@@ -253,10 +257,11 @@ class SnuCrawler(BaseCrawler):
         )
 
 class KaistCrawler(BaseCrawler):
-    def __init__(self):
+    def __init__(self, driver):
         super().__init__(
             base_url="https://cs.kaist.ac.kr/bbs/recruit",
-            school_name="카이스트"
+            school_name="카이스트",
+            driver=driver
         )
         self.content_selector = "#container > div.inner > div > div.viewDetail"
         self.title_selector = "#container > div.inner > div.eval_tb > table > tbody > tr:nth-child(3) > td.line2_2_txt > a"
@@ -276,20 +281,18 @@ class KaistCrawler(BaseCrawler):
             return None
 
     def crawl(self):
-        driver = None
         try:
             logging.info(f"Starting crawl for {self.school_name}")
-            driver = self.create_headless_driver()
-            driver.get(self.base_url)
+            self.driver.get(self.base_url)
             time.sleep(10)
 
             try:
                 logging.info("Processing notice")
-                title_element = driver.find_element(By.CSS_SELECTOR, self.title_selector)
+                title_element = self.driver.find_element(By.CSS_SELECTOR, self.title_selector)
                 title = title_element.text.strip()
                 logging.info(f"Found title: {title}")
 
-                date_element = driver.find_element(By.CSS_SELECTOR, self.date_selector)
+                date_element = self.driver.find_element(By.CSS_SELECTOR, self.date_selector)
                 date = date_element.text.strip()
                 logging.info(f"Found date: {date}")
 
@@ -311,16 +314,13 @@ class KaistCrawler(BaseCrawler):
 
         except Exception as e:
             logging.error(f"Error during crawling: {e}")
-        finally:
-            if driver:
-                driver.quit()
-                logging.info("Crawler finished")
 
 class YonseiCrawler(BaseCrawler):
-    def __init__(self):
+    def __init__(self, driver):
         super().__init__(
             base_url="https://cs.yonsei.ac.kr/csai/board/jobInfo.do",
-            school_name="연세대학교"
+            school_name="연세대학교",
+            driver=driver
         )
         self.content_selector = "#jwxe_main_content > div > div.board-wrap > div > dl.board-write-box.board-write-box-v03 > dd > div"
         self.title_selector = "#jwxe_main_content > div > div > div > table > tbody > tr:nth-child(1) > td.text-left > div.c-board-title-wrap > a"

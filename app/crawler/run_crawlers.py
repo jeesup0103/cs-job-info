@@ -1,10 +1,26 @@
-from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler
+from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler, ChromeDriverManager
 
 def run_all_crawlers():
-    SkkuCrawler().crawl()
-    SnuCrawler().crawl()
-    YonseiCrawler().crawl()
-    KaistCrawler().crawl()
+    # Create a single ChromeDriver instance to be shared across all crawlers
+    driver_manager = ChromeDriverManager()
+    driver = driver_manager.create_driver()
+
+    try:
+        # Initialize crawlers with the shared driver
+        crawlers = [
+            KaistCrawler(driver=driver),
+            SkkuCrawler(driver=driver),
+            # SnuCrawler(driver=driver),
+            YonseiCrawler(driver=driver),
+        ]
+
+        # Run crawlers sequentially
+        for crawler in crawlers:
+            crawler.crawl()
+
+    finally:
+        # Clean up the driver
+        driver_manager.quit()
 
 if __name__ == "__main__":
     run_all_crawlers()
