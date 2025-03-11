@@ -22,8 +22,7 @@ services:
       - .:/app
     environment:
       - DATABASE_URL=mysql+pymysql://root:1234@db:3306/notice_db
-    command: python -c "from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler;
-                        SkkuCrawler().crawl(); SnuCrawler().crawl(); YonseiCrawler().crawl(); KaistCrawler().crawl();"
+    command: python /app/crawler/run_crawlers.py
     depends_on:
       db:
         condition: service_healthy
