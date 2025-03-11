@@ -41,39 +41,85 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), na
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request, db: Session = Depends(get_db)):
-    notices = db.query(Notice).order_by(Notice.date_posted.desc()).all()
-    schools = ["SKKU", "SNU", "Yonsei"]  # You might want to make this dynamic
-    return templates.TemplateResponse(
-        "index.html",
-        {"request": request, "notices": notices, "schools": schools}
-    )
+async def root(request: Request, page: int = 1, db: Session = Depends(get_db)):
+    # Set items per page
+    items_per_page = 12
 
-@app.get("/school/{school_name}", response_class=HTMLResponse)
-async def school_notices(request: Request, school_name: str, db: Session = Depends(get_db)):
-    notices = db.query(Notice).filter(Notice.source_school == school_name).order_by(Notice.date_posted.desc()).all()
-    schools = ["SKKU", "SNU", "Yonsei"]
+    # Calculate offset
+    offset = (page - 1) * items_per_page
+
+    # Get total count of notices
+    total_notices = db.query(Notice).count()
+
+    # Get paginated notices
+    notices = db.query(Notice).order_by(Notice.date_posted.desc()).offset(offset).limit(items_per_page).all()
+
+    # Calculate total pages
+    total_pages = (total_notices + items_per_page - 1) // items_per_page
+
+    schools = ["SKKU", "SNU", "Yonsei", "Kaist"]
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "notices": notices, "schools": schools}
+        {
+            "request": request,
+            "notices": notices,
+            "schools": schools,
+            "current_page": page,
+            "total_pages": total_pages
+        }
     )
 
 @app.get("/search", response_class=HTMLResponse)
-async def search_notices(request: Request, q: str, db: Session = Depends(get_db)):
+async def search_notices(request: Request, q: str, page: int = 1, db: Session = Depends(get_db)):
+    # Set items per page
+    items_per_page = 12
+
+    # Calculate offset
+    offset = (page - 1) * items_per_page
+
+    # Get total count of matching notices
+    total_notices = db.query(Notice).filter(
+        (Notice.title.ilike(f"%{q}%")) |
+        (Notice.content.ilike(f"%{q}%"))
+    ).count()
+
+    # Get paginated notices
     notices = db.query(Notice).filter(
         (Notice.title.ilike(f"%{q}%")) |
         (Notice.content.ilike(f"%{q}%"))
-    ).order_by(Notice.date_posted.desc()).all()
-    schools = ["SKKU", "SNU", "Yonsei"]
+    ).order_by(Notice.date_posted.desc())\
+    .offset(offset).limit(items_per_page).all()
+
+    # Calculate total pages
+    total_pages = (total_notices + items_per_page - 1) // items_per_page
+
+    schools = ["SKKU", "SNU", "Yonsei", "Kaist"]
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "notices": notices, "schools": schools}
+        {
+            "request": request,
+            "notices": notices,
+            "schools": schools,
+            "current_page": page,
+            "total_pages": total_pages,
+            "search_query": q
+        }
     )
 
 # API endpoints
 @app.get("/api/notices")
-def get_notices(db: Session = Depends(get_db)):
-    return db.query(Notice).all()
+def get_notices(request: Request, db: Session = Depends(get_db)):
+    notices = db.query(Notice).all()
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "notices": notices,
+            "current_page": 1,
+            "total_pages": 1,
+            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
+        }
+    )
 
 @app.post("/api/insert_notice")
 def post_notice(notice_req: NoticeRequestCreate, db: Session = Depends(get_db)):
@@ -84,21 +130,61 @@ def post_notice(notice_req: NoticeRequestCreate, db: Session = Depends(get_db)):
 
 # Crawler endpoints
 @app.get("/skku")
-def skku():
+def skku(request: Request):
     crawler = SkkuCrawler()
-    return crawler.crawl()
+    notices = crawler.crawl()
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "notices": notices,
+            "current_page": 1,
+            "total_pages": 1,
+            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
+        }
+    )
 
 @app.get("/snu")
-def snu():
+def snu(request: Request):
     crawler = SnuCrawler()
-    return crawler.crawl()
+    notices = crawler.crawl()
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "notices": notices,
+            "current_page": 1,
+            "total_pages": 1,
+            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
+        }
+    )
 
 @app.get("/yonsei")
-def yonsei():
+def yonsei(request: Request):
     crawler = YonseiCrawler()
-    return crawler.crawl()
+    notices = crawler.crawl()
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "notices": notices,
+            "current_page": 1,
+            "total_pages": 1,
+            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
+        }
+    )
 
 @app.get("/kaist")
-def kaist():
+def kaist(request: Request):
     crawler = KaistCrawler()
-    return crawler.crawl()
+    notices = crawler.crawl()
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "notices": notices,
+            "current_page": 1,
+            "total_pages": 1,
+            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
+        }
+    )
