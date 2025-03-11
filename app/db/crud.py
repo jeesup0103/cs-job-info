@@ -1,14 +1,14 @@
 from sqlalchemy.orm import Session
 
-from db.models import Notice
-from db.schemas import NoticeRequest
+from app.db.models import Notice
+from app.db.schemas import NoticeRequest
 
 def get_notice_by_link(db: Session, link: str):
     return db.query(Notice).filter(Notice.original_link == link).first()
 
 
 def add_notice(db: Session, data: NoticeRequest):
-    
+
     existing_notice = get_notice_by_link(db, data.original_link)
     if existing_notice:
         return False
@@ -19,9 +19,9 @@ def add_notice(db: Session, data: NoticeRequest):
         original_link=data.original_link,
         date_posted=data.date_posted,
         source_school=data.source_school
-    )    
+    )
     db.add(new_notice)
     db.commit()
     db.refresh(new_notice)
-    
-    db.query(Notice).all()
+
+    return db.query(Notice).all()

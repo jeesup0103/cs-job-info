@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}All Notices{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>CS School Notices</h1>
+        <p class="text-muted">Stay updated with the latest notices from CS departments across different schools.</p>
+    </div>
+</div>
+
+<div class="row">
+    {% for notice in notices %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">{{ notice.title }}</h5>
+                    <span class="badge bg-primary">{{ notice.source_school }}</span>
+                </div>
+                <p class="card-text text-truncate">{{ notice.content }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-muted">{{ notice.date_posted }}</small>
+                    <a href="{{ notice.original_link }}" class="btn btn-outline-primary btn-sm" target="_blank">Read More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not notices %}
+<div class="text-center py-5">
+    <h3>No notices found</h3>
+    <p class="text-muted">Check back later for updates!</p>
+</div>
+{% endif %}
+{% endblock %}

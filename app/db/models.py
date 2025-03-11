@@ -8,9 +8,9 @@ class Notice(Base):
 
     notice_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     title = Column(String(255), nullable=False)
-    content = Column(Text, nullable=False)
-    original_link = Column(String(255), nullable=False)
-    date_posted = Column(Date, nullable=False)
-    source_school = Column(String(255), nullable=False)
+    content = Column(Text, nullable=True)
+    original_link = Column(String(255), nullable=False, unique=True)
+    date_posted = Column(String(100), nullable=True)
+    source_school = Column(String(100), nullable=False)
 
-    
+
