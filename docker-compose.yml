@@ -8,7 +8,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - DATABASE_URL=mysql+pymysql://root:1234@db:3306/notice_db
+      - DATABASE_URL=mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE}
     depends_on:
       db:
         condition: service_healthy
@@ -21,7 +21,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - DATABASE_URL=mysql+pymysql://root:1234@db:3306/notice_db
+      - DATABASE_URL=mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE}
     command: python /app/crawler/run_crawlers.py
     depends_on:
       db:
@@ -33,8 +33,8 @@ services:
   db:
     image: mysql:8.0
     environment:
-      - MYSQL_ROOT_PASSWORD=1234
-      - MYSQL_DATABASE=notice_db
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_ROOT_HOST=%
     command: --default-authentication-plugin=mysql_native_password
     volumes:
@@ -42,7 +42,7 @@ services:
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
