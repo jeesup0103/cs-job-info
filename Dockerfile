@@ -31,5 +31,6 @@ COPY . .
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Command to run the application
+# Command to run the application and crawler
+RUN pip install --no-cache-dir -r requirements.txt
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000"]
