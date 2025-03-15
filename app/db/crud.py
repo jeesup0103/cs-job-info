@@ -24,4 +24,5 @@ def add_notice(db: Session, data: NoticeRequest):
     db.commit()
     db.refresh(new_notice)
 
-    return db.query(Notice).all()
+    # Return notices ordered by date_posted in descending order
+    return db.query(Notice).order_by(Notice.date_posted.desc()).all()
