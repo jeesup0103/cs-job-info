@@ -59,6 +59,7 @@ services:
       - "443:443"     # Expose port 443 on the host (for HTTPS, if configured)
     volumes:
       - ./nginx_conf:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: unless-stopped
     networks:
       - app-network
