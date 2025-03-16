@@ -50,6 +50,19 @@ services:
     networks:
       - app-network
 
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - web
+    ports:
+      - "80:80"       # Expose port 80 on the host
+      - "443:443"     # Expose port 443 on the host (for HTTPS, if configured)
+    volumes:
+      - ./nginx_conf:/etc/nginx/conf.d
+    restart: unless-stopped
+    networks:
+      - app-network
+
 volumes:
   mysql_data:
 
