@@ -33,7 +33,6 @@ services:
     restart: on-failure
     networks:
       - app-network
-
   db:
     image: mysql:8.0
     environment:
@@ -55,21 +54,22 @@ services:
       - app-network
 
   nginx-proxy:
-      image: nginxproxy/nginx-proxy:latest
-      container_name: nginx-proxy
-      restart: unless-stopped
-      ports:
-        - "80:80"
-        - "443:443"
-      volumes:
-        - /var/run/docker.sock:/tmp/docker.sock:ro
-        - ./nginx_vhost:/etc/nginx/conf.d
-        # Volumes for certs, vhost templates and static html (needed by the companion)
-        - ./certs:/etc/nginx/certs:rw
-        - ./vhost.d:/etc/nginx/vhost.d
-        - ./html:/usr/share/nginx/html
-      networks:
-        - app-network
+    image: nginxproxy/nginx-proxy:latest
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      # Optional: if you have custom vhost configurations
+      - ./nginx_vhost:/etc/nginx/conf.d
+      # Volumes for certs, vhost templates and static html (needed by the companion)
+      - ./certs:/etc/nginx/certs:rw
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+    networks:
+      - app-network
 
   nginx-letsencrypt:
     image: nginxproxy/acme-companion:latest
