@@ -47,11 +47,11 @@ A web application that aggregates and displays job notices from various Computer
   - Environment variable management
   - Container networking
 
-- **Nginx**: Web server and reverse proxy
-  - Serves static files
-  - Load balancing
-  - SSL/TLS termination
-  - Reverse proxy to FastAPI application
+- **Nginx (nginx-proxy with Let’s Encrypt companion)**: Web server and reverse proxy
+  - Reverse Proxy: Routes incoming requests to the appropriate FastAPI application container based on domain
+  - SSL/TLS Termination: Automatically obtains and renews SSL certificates from Let’s Encrypt via the acme-companion container
+  - Dynamic Configuration: Uses docker-gen to dynamically update its configuration as containers start and stop
+  - Static File Serving & Load Balancing: Optionally serves static content and can distribute traffic if scaling out services
 
 ### Crawling/Scraping
 
@@ -60,7 +60,6 @@ A web application that aggregates and displays job notices from various Computer
   - Enables interaction with modern web applications
   - Required for websites that load content dynamically (SPA, AJAX)
   - Simulates real browser behavior for reliable scraping
-  - Used specifically for KAIST's website which requires JavaScript rendering
 
 ## Project Structure
 ```
@@ -71,54 +70,16 @@ A web application that aggregates and displays job notices from various Computer
 │   ├── static/       # Static files (CSS, JS)
 │   ├── templates/    # Jinja2 HTML templates
 │   └── main.py       # FastAPI application entry point
+├── nginx_conf
+│   ├── default.conf
 ├── docker-compose.yml
 ├── Dockerfile
 └──  requirements.txt
 ```
 
 ## Features
-- Aggregates notices from multiple university CS departments
+- Aggregates job notices from multiple university CS departments
 - Real-time search functionality
 - Pagination for better user experience
 - Responsive design for mobile and desktop
 - Automated crawling every 24 hours
-- Clean and modern UI
-
-## Setup and Installation
-
-1. Clone the repository
-```bash
-git clone
-```
-
-2. Create environment variables file (.env)
-```bash
-MYSQL_ROOT_PASSWORD=your_password
-MYSQL_DATABASE=your_database_name
-```
-
-3. Start the application using Docker Compose
-```bash
-docker-compose up -b
-```
-
-4. Access the application
-```
-http://localhost:80
-```
-
-## Development
-
-To run the application in development mode:
-
-```bash
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the application
-uvicorn app.main:app --reload
-```
