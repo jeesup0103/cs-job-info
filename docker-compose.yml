@@ -7,8 +7,8 @@ services:
       - .:/app
     environment:
       - DATABASE_URL=mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE}
-      - VIRTUAL_HOST=csjobinfo.com
-      - LETSENCRYPT_HOST=csjobinfo.com
+      - VIRTUAL_HOST=csjobinfo.com,www.csjobinfo.com
+      - LETSENCRYPT_HOST=csjobinfo.com,www.csjobinfo.com
       - LETSENCRYPT_EMAIL=jeesup0103@naver.com
     depends_on:
       db:
