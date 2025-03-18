@@ -43,7 +43,7 @@ templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request, page: int = 1, db: Session = Depends(get_db)):
     # Set items per page
-    items_per_page = 12
+    items_per_page = 9
 
     # Calculate offset
     offset = (page - 1) * items_per_page
@@ -72,7 +72,7 @@ async def root(request: Request, page: int = 1, db: Session = Depends(get_db)):
 @app.get("/search", response_class=HTMLResponse)
 async def search_notices(request: Request, q: str, page: int = 1, db: Session = Depends(get_db)):
     # Set items per page
-    items_per_page = 12
+    items_per_page = 9
 
     # Calculate offset
     offset = (page - 1) * items_per_page
