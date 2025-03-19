@@ -235,7 +235,6 @@ class SkkuCrawler(BaseCrawler):
             driver=driver
         )
         self.content_selector = "div.board-view-content-wrap.board-view-txt"
-
         self.title_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dt > a"
         self.date_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dd > ul > li:nth-child(3)"
 

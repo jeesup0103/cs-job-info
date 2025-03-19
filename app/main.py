@@ -41,29 +41,40 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), na
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 @app.get("/", response_class=HTMLResponse)
-async def root(request: Request, page: int = 1, db: Session = Depends(get_db)):
+async def root(
+    request: Request,
+    page: int = 1,
+    school: str = None,
+    db: Session = Depends(get_db)
+):
     # Set items per page
     items_per_page = 9
 
     # Calculate offset
     offset = (page - 1) * items_per_page
+    # Base query
+    query = db.query(Notice)
+
+    # Apply school filter if specified
+    if school:
+        query = query.filter(Notice.source_school == school)
 
     # Get total count of notices
-    total_notices = db.query(Notice).count()
+    total_notices = query.count()
 
-    # Get paginated notices
-    notices = db.query(Notice).order_by(Notice.date_posted.desc()).offset(offset).limit(items_per_page).all()
+    notices = query.order_by(Notice.date_posted.desc()).offset(offset).limit(items_per_page).all()
 
     # Calculate total pages
     total_pages = (total_notices + items_per_page - 1) // items_per_page
 
-    schools = ["SKKU", "SNU", "Yonsei", "Kaist"]
+    schools = ["SKKU", "Yonsei", "KAIST"]  # Add all your schools here
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
             "notices": notices,
             "schools": schools,
+            "selected_school": school,
             "current_page": page,
             "total_pages": total_pages
         }
