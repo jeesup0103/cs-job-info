@@ -21,16 +21,20 @@
                     </li>
                 </ul>
                 <div class="d-flex gap-2">
-                    <select class="form-select" id="schoolFilter" onchange="location = this.value;">
-                        <option value="">Select a School</option>
-                        {% for school in schools %}
-                        <option value="/?school={{ school }}" {% if selected_school == school %}selected{% endif %}>{{ school }}</option>
-                        {% endfor %}
-                    </select>
-                    <form class="d-flex" action="/search" method="GET">
-                        <input class="form-control form-control-sm" type="search" name="q" placeholder="Search notices...">
-                        <button class="btn btn-outline-light btn-sm" type="submit">Search</button>
-                    </form>
+                    <div class="me-2">
+                        <select class="form-select" id="schoolFilter" onchange="location = this.value;">
+                            <option value="">Select a School</option>
+                            {% for school in schools %}
+                            <option value="/?school={{ school }}" {% if selected_school == school %}selected{% endif %}>{{ school }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <form class="d-flex" action="/search" method="GET" style="height: 100%;">
+                            <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Search notices..." style="height: 100%;">
+                            <button class="btn btn-outline-light btn-sm" type="submit" style="height: 100%;">Search</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
