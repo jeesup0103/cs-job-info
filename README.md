@@ -1,19 +1,8 @@
-# CS Job Notices
+# CS School Notices
 
 A web application that aggregates and displays job notices from various Computer Science departments of different universities.
 
 ## Technology Stack
-
-### Frontend
-- **Bootstrap 5**: Frontend CSS framework
-  - Responsive grid system
-  - Pre-built components
-  - Modern UI design
-
-- **Jinja2**: Template engine for Python
-  - Server-side rendering of HTML
-  - Template inheritance and reusability
-  - Dynamic content generation
 
 ### Backend
 - **FastAPI**: Modern, fast web framework for building APIs with Python
@@ -29,6 +18,17 @@ A web application that aggregates and displays job notices from various Computer
 - **PyMySQL**: MySQL client library for Python
   - Database connector for MySQL
   - Used for establishing connections with the MySQL database
+
+### Frontend
+- **Bootstrap 5**: Frontend CSS framework
+  - Responsive grid system
+  - Pre-built components
+  - Modern UI design
+
+- **Jinja2**: Template engine for Python
+  - Server-side rendering of HTML
+  - Template inheritance and reusability
+  - Dynamic content generation
 
 ### Database
 - **MySQL**: Relational database
@@ -47,19 +47,17 @@ A web application that aggregates and displays job notices from various Computer
   - Environment variable management
   - Container networking
 
-- **Nginx (nginx-proxy with Let’s Encrypt companion)**: Web server and reverse proxy
-  - Reverse Proxy: Routes incoming requests to the appropriate FastAPI application container based on domain
-  - SSL/TLS Termination: Automatically obtains and renews SSL certificates from Let’s Encrypt via the acme-companion container
-  - Dynamic Configuration: Uses docker-gen to dynamically update its configuration as containers start and stop
-  - Static File Serving & Load Balancing: Optionally serves static content and can distribute traffic if scaling out services
+- **Nginx**: Web server and reverse proxy
+  - Serves static files
+  - Load balancing
+  - SSL/TLS termination
+  - Reverse proxy to FastAPI application
 
 ### Crawling/Scraping
-
-- **Selenium with Chrome WebDriver**: Browser automation tool
-  - Handles dynamic JavaScript content
-  - Enables interaction with modern web applications
-  - Required for websites that load content dynamically (SPA, AJAX)
-  - Simulates real browser behavior for reliable scraping
+- **BeautifulSoup4**: Web scraping library
+  - HTML parsing
+  - Data extraction from university websites
+  - Clean and maintainable scraping code
 
 ## Project Structure
 ```
@@ -70,16 +68,55 @@ A web application that aggregates and displays job notices from various Computer
 │   ├── static/       # Static files (CSS, JS)
 │   ├── templates/    # Jinja2 HTML templates
 │   └── main.py       # FastAPI application entry point
-├── nginx_conf
-│   ├── default.conf
 ├── docker-compose.yml
 ├── Dockerfile
-└──  requirements.txt
+├── requirements.txt
+└── init_db.sh
 ```
 
 ## Features
-- Aggregates job notices from multiple university CS departments
+- Aggregates notices from multiple university CS departments
 - Real-time search functionality
 - Pagination for better user experience
 - Responsive design for mobile and desktop
 - Automated crawling every 24 hours
+- Clean and modern UI
+
+## Setup and Installation
+
+1. Clone the repository
+```bash
+git clone <repository-url>
+```
+
+2. Create environment variables file (.env)
+```bash
+MYSQL_ROOT_PASSWORD=your_password
+MYSQL_DATABASE=your_database_name
+```
+
+3. Start the application using Docker Compose
+```bash
+docker-compose up --build
+```
+
+4. Access the application
+```
+http://localhost:80
+```
+
+## Development
+
+To run the application in development mode:
+
+```bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the application
+uvicorn app.main:app --reload
+```
