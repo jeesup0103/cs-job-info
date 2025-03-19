@@ -67,7 +67,7 @@ async def root(
     # Calculate total pages
     total_pages = (total_notices + items_per_page - 1) // items_per_page
 
-    schools = ["SKKU", "Yonsei", "KAIST"]  # Add all your schools here
+    schools = ["성균관대학교", "연세대학교", "카이스트"]  # Add all your schools here
     return templates.TemplateResponse(
         "index.html",
         {
@@ -104,7 +104,7 @@ async def search_notices(request: Request, q: str, page: int = 1, db: Session = 
     # Calculate total pages
     total_pages = (total_notices + items_per_page - 1) // items_per_page
 
-    schools = ["SKKU", "SNU", "Yonsei", "Kaist"]
+    schools = ["성균관대학교", "연세대학교", "카이스트"]
     return templates.TemplateResponse(
         "index.html",
         {
@@ -128,7 +128,7 @@ def get_notices(request: Request, db: Session = Depends(get_db)):
             "notices": notices,
             "current_page": 1,
             "total_pages": 1,
-            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
+            "schools": ["성균관대학교", "연세대학교", "카이스트"]
         }
     )
 
@@ -151,24 +151,24 @@ def skku(request: Request):
             "notices": notices,
             "current_page": 1,
             "total_pages": 1,
-            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
+            "schools": ["성균관대학교"]
         }
     )
 
-@app.get("/snu")
-def snu(request: Request):
-    crawler = SnuCrawler()
-    notices = crawler.crawl()
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "notices": notices,
-            "current_page": 1,
-            "total_pages": 1,
-            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
-        }
-    )
+# @app.get("/snu")
+# def snu(request: Request):
+#     crawler = SnuCrawler()
+#     notices = crawler.crawl()
+#     return templates.TemplateResponse(
+#         "index.html",
+#         {
+#             "request": request,
+#             "notices": notices,
+#             "current_page": 1,
+#             "total_pages": 1,
+#             "schools": ["성균관대학교", "연세대학교", "카이스트"]
+#         }
+#     )
 
 @app.get("/yonsei")
 def yonsei(request: Request):
@@ -181,7 +181,7 @@ def yonsei(request: Request):
             "notices": notices,
             "current_page": 1,
             "total_pages": 1,
-            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
+            "schools": ["연세대학교"]
         }
     )
 
@@ -196,6 +196,6 @@ def kaist(request: Request):
             "notices": notices,
             "current_page": 1,
             "total_pages": 1,
-            "schools": ["SKKU", "SNU", "Yonsei", "Kaist"]
+            "schools": ["카이스트"]
         }
     )
