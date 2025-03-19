@@ -230,13 +230,14 @@ class BaseCrawler:
 class SkkuCrawler(BaseCrawler):
     def __init__(self, driver):
         super().__init__(
-            base_url="https://sw.skku.edu/sw/notice.do",
+            base_url="https://sw.skku.edu/sw/notice.do?mode=list&srCategoryId1=1585&srSearchKey=&srSearchVal=",
             school_name="성균관대학교",
             driver=driver
         )
         self.content_selector = "div.board-view-content-wrap.board-view-txt"
-        self.title_selector = "div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dt > a"
-        self.date_selector = "div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dd > ul > li:nth-child(3)"
+
+        self.title_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dt > a"
+        self.date_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dd > ul > li:nth-child(3)"
 
 class SnuCrawler(BaseCrawler):
     def __init__(self, driver):

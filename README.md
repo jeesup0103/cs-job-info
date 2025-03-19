@@ -1,4 +1,4 @@
-# CS School Notices
+# CS Job Notices
 
 A web application that aggregates and displays job notices from various Computer Science departments of different universities.
 
