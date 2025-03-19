@@ -15,7 +15,7 @@ main {
     background-color: #f8f9fa;
 }
 
-.card:hover {
+.card-body:hover {
     transform: translateY(-5px);
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
@@ -35,12 +35,12 @@ main {
     padding: 0.5em 0.75em;
 }
 
-.btn-primary {
-    background-color: #007bff; /* Primary button color */
-    border: none; /* Remove border */
+.btn-outline-primary {
+    background-color: #007bff;
+    border: none;
 }
-.btn-primary:hover {
-    background-color: #0056b3; /* Darker shade on hover */
+.btn-outline-primary:hover {
+    background-color: #0056b3;
 }
 
 .navbar {
