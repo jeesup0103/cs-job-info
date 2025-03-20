@@ -1,4 +1,4 @@
-from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler, ChromeDriverManager
+from app.crawler.crawl import SkkuCrawler, SkkuCrawler2, YonseiCrawler, KaistCrawler, ChromeDriverManager
 
 def run_all_crawlers():
     # Create a single ChromeDriver instance to be shared across all crawlers
@@ -10,6 +10,7 @@ def run_all_crawlers():
         crawlers = [
             KaistCrawler(driver=driver),
             SkkuCrawler(driver=driver),
+            SkkuCrawler2(driver=driver),
             # SnuCrawler(driver=driver),
             YonseiCrawler(driver=driver),
         ]

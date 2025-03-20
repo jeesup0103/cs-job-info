@@ -10,7 +10,7 @@ import os
 from app.db.session import engine
 from app.db.models import Base, Notice
 from app.db.session import SessionLocal
-from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler
+from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler, run_all_skku_crawlers
 from app.db.schemas import NoticeRequest, NoticeRequestCreate
 from app.db.crud import add_notice, get_notice_by_link
 
@@ -142,8 +142,7 @@ def post_notice(notice_req: NoticeRequestCreate, db: Session = Depends(get_db)):
 # Crawler endpoints
 @app.get("/skku")
 def skku(request: Request):
-    crawler = SkkuCrawler()
-    notices = crawler.crawl()
+    notices = run_all_skku_crawlers()
     return templates.TemplateResponse(
         "index.html",
         {
@@ -154,6 +153,7 @@ def skku(request: Request):
             "schools": ["성균관대학교"]
         }
     )
+
 
 # @app.get("/snu")
 # def snu(request: Request):

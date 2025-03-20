@@ -238,6 +238,28 @@ class SkkuCrawler(BaseCrawler):
         self.title_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dt > a"
         self.date_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(1) > dl > dd > ul > li:nth-child(3)"
 
+class SkkuCrawler2(BaseCrawler):
+    def __init__(self, driver):
+        super().__init__(
+            base_url="https://cse.skku.edu/cse/notice.do?mode=list&srCategoryId1=1585&srSearchKey=&srSearchVal=",
+            school_name="성균관대학교",
+            driver=driver
+        )
+        self.content_selector = "div.board-view-content-wrap.board-view-txt"
+        self.title_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(7) > dl > dt > a"
+        self.date_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(7) > dl > dd > ul > li:nth-child(3)"
+
+def run_all_skku_crawlers(driver):
+    skku_crawler_1 = SkkuCrawler(driver)
+    skku_crawler_2 = SkkuCrawler2(driver)
+
+    results_1 = skku_crawler_1.crawl()
+    results_2 = skku_crawler_2.crawl()
+
+    # Combine results from both crawlers
+    combined_results = results_1 + results_2
+    return combined_results
+
 class SnuCrawler(BaseCrawler):
     def __init__(self, driver):
         super().__init__(
