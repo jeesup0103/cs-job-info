@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 2222
           script: |
-            cd /home/ubuntu/notice-crawler
+            cd /home/ubuntu/cs_school_notices
             git fetch
             git rebase origin/main
             docker-compose build
