@@ -19,7 +19,7 @@ jobs:
           host: ${{ secrets.HOST_IP }}
           username: ${{ secrets.HOST_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: 2222
           script: |
             cd /home/ubuntu/notice-crawler
             git fetch
