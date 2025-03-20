@@ -23,7 +23,7 @@ services:
       - .:/app
     environment:
       - DATABASE_URL=mysql+pymysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/${MYSQL_DATABASE}
-    command: ["sh", "./app/crawler/run_every_24h.sh"]
+    command: ["sh", "./app/crawler/run_every_6h.sh"]
     depends_on:
       db:
         condition: service_healthy

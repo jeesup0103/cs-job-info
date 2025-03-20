@@ -79,4 +79,4 @@ A web application that aggregates and displays job notices from various Computer
 - Real-time search functionality
 - Pagination for better user experience
 - Responsive design for mobile and desktop
-- Automated crawling every 24 hours
+- Automated crawling every 6 hours
