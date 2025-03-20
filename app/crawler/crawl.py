@@ -246,8 +246,8 @@ class SkkuCrawler2(BaseCrawler):
             driver=driver
         )
         self.content_selector = "div.board-view-content-wrap.board-view-txt"
-        self.title_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(7) > dl > dt > a"
-        self.date_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(7) > dl > dd > ul > li:nth-child(3)"
+        self.title_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(8) > dl > dt > a"
+        self.date_selector = "#jwxe_main_content > div > div > div.board-name-list.board-wrap > ul > li:nth-child(8) > dl > dd > ul > li:nth-child(3)"
 
 def run_all_skku_crawlers(driver):
     skku_crawler_1 = SkkuCrawler(driver)
