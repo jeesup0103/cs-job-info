@@ -23,6 +23,7 @@
                 <div class="d-flex gap-2">
                     <div class="me-2">
                         <select class="form-select" id="schoolFilter" onchange="location = this.value;">
+                            <option value="">Select School</option>
                             <option value="/">전체</option>
                             {% for school in schools %}
                             <option value="/?school={{ school }}" {% if selected_school == school %}selected{% endif %}>{{ school }}</option>
