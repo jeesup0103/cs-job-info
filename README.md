@@ -1,6 +1,6 @@
-# CS School Notices
+# CS Job Info
 
-A web application that aggregates and displays job notices from various Computer Science departments of different universities.
+A web application that displays job notices from Computer Science departments of different universities.
 
 ## Technology Stack
 
@@ -65,13 +65,12 @@ A web application that aggregates and displays job notices from various Computer
 ├── app/
 │   ├── crawler/      # Web crawlers for different universities
 │   ├── db/           # Database models and operations
-│   ├── static/       # Static files (CSS, JS)
+│   ├── static/       # Static files (CSS)
 │   ├── templates/    # Jinja2 HTML templates
 │   └── main.py       # FastAPI application entry point
 ├── docker-compose.yml
 ├── Dockerfile
-├── requirements.txt
-└── init_db.sh
+└── requirements.txt
 ```
 
 ## Features
