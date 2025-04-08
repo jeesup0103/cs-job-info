@@ -10,7 +10,7 @@ import os
 from app.db.session import engine
 from app.db.models import Base, Notice
 from app.db.session import SessionLocal
-from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler, run_all_skku_crawlers
+from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler, HanyangCrawler, run_all_skku_crawlers
 from app.db.schemas import NoticeRequest, NoticeRequestCreate
 from app.db.crud import add_notice, get_notice_by_link
 
