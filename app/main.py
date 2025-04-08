@@ -199,3 +199,18 @@ def kaist(request: Request):
             "schools": ["카이스트"]
         }
     )
+
+@app.get("/hanyang")
+def hanyang(request: Request):
+    crawler = HanyangCrawler()
+    notices = crawler.crawl()
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "notices": notices,
+            "current_page": 1,
+            "total_pages": 1,
+            "schools": ["한양대학교"]
+        }
+    )
