@@ -356,6 +356,6 @@ class HanyangCrawler(BaseCrawler):
             school_name="한양대학교",
             driver=driver
         )
+        self.content_selector="#content_box > div > table.bbs_view > tbody > tr:nth-child(3) > td > table:nth-child(2) > tbody > tr > td",
         self.title_selector="#content_box > div > table > tbody > tr:nth-child(1) > td.left > a",
         self.date_selector="#content_box > div > table > tbody > tr:nth-child(1) > td:nth-child(5)",
-        self.content_selector="#content_box > div > table.bbs_view > tbody > tr:nth-child(3) > td > table:nth-child(2) > tbody > tr > td",

@@ -10,7 +10,7 @@ import os
 from app.db.session import engine
 from app.db.models import Base, Notice
 from app.db.session import SessionLocal
-from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler, HanyangCrawler, run_all_skku_crawlers
+from app.crawler.crawl import SkkuCrawler, SnuCrawler, YonseiCrawler, KaistCrawler, HanyangCrawler, run_all_skku_crawlers, ChromeDriverManager
 from app.db.schemas import NoticeRequest, NoticeRequestCreate
 from app.db.crud import add_notice, get_notice_by_link
 
@@ -142,18 +142,22 @@ def post_notice(notice_req: NoticeRequestCreate, db: Session = Depends(get_db)):
 # Crawler endpoints
 @app.get("/skku")
 def skku(request: Request):
-    notices = run_all_skku_crawlers()
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "notices": notices,
-            "current_page": 1,
-            "total_pages": 1,
-            "schools": ["성균관대학교"]
-        }
-    )
-
+    driver_manager = ChromeDriverManager()
+    driver = driver_manager.create_driver()
+    try:
+        notices = run_all_skku_crawlers(driver)
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "notices": notices,
+                "current_page": 1,
+                "total_pages": 1,
+                "schools": ["성균관대학교"]
+            }
+        )
+    finally:
+        driver_manager.quit()
 
 # @app.get("/snu")
 # def snu(request: Request):
@@ -172,45 +176,60 @@ def skku(request: Request):
 
 @app.get("/yonsei")
 def yonsei(request: Request):
-    crawler = YonseiCrawler()
-    notices = crawler.crawl()
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "notices": notices,
-            "current_page": 1,
-            "total_pages": 1,
-            "schools": ["연세대학교"]
-        }
-    )
+    driver_manager = ChromeDriverManager()
+    driver = driver_manager.create_driver()
+    try:
+        crawler = YonseiCrawler(driver=driver)
+        notices = crawler.crawl()
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "notices": notices,
+                "current_page": 1,
+                "total_pages": 1,
+                "schools": ["연세대학교"]
+            }
+        )
+    finally:
+        driver_manager.quit()
 
 @app.get("/kaist")
 def kaist(request: Request):
-    crawler = KaistCrawler()
-    notices = crawler.crawl()
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "notices": notices,
-            "current_page": 1,
-            "total_pages": 1,
-            "schools": ["카이스트"]
-        }
-    )
+    driver_manager = ChromeDriverManager()
+    driver = driver_manager.create_driver()
+    try:
+        crawler = KaistCrawler(driver=driver)
+        notices = crawler.crawl()
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "notices": notices,
+                "current_page": 1,
+                "total_pages": 1,
+                "schools": ["카이스트"]
+            }
+        )
+    finally:
+        driver_manager.quit()
 
 @app.get("/hanyang")
 def hanyang(request: Request):
-    crawler = HanyangCrawler()
-    notices = crawler.crawl()
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "notices": notices,
-            "current_page": 1,
-            "total_pages": 1,
-            "schools": ["한양대학교"]
-        }
-    )
+    driver_manager = ChromeDriverManager()
+    driver = driver_manager.create_driver()
+    try:
+        crawler = HanyangCrawler(driver=driver)
+        notices = crawler.crawl()
+        return templates.TemplateResponse(
+            "index.html",
+            {
+                "request": request,
+                "notices": notices,
+                "current_page": 1,
+                "total_pages": 1,
+                "schools": ["한양대학교"]
+            }
+        )
+    finally:
+        driver_manager.quit()
