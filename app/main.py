@@ -159,20 +159,20 @@ def skku(request: Request):
     finally:
         driver_manager.quit()
 
-# @app.get("/snu")
-# def snu(request: Request):
-#     crawler = SnuCrawler()
-#     notices = crawler.crawl()
-#     return templates.TemplateResponse(
-#         "index.html",
-#         {
-#             "request": request,
-#             "notices": notices,
-#             "current_page": 1,
-#             "total_pages": 1,
-#             "schools": ["성균관대학교", "연세대학교", "카이스트"]
-#         }
-#     )
+@app.get("/snu")
+def snu(request: Request):
+    crawler = SnuCrawler()
+    notices = crawler.crawl()
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "notices": notices,
+            "current_page": 1,
+            "total_pages": 1,
+            "schools": ["서울대학교"]
+        }
+    )
 
 @app.get("/yonsei")
 def yonsei(request: Request):

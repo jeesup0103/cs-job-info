@@ -263,20 +263,158 @@ def run_all_skku_crawlers(driver):
 class SnuCrawler(BaseCrawler):
     def __init__(self, driver):
         super().__init__(
-            base_url="https://cse.snu.ac.kr/community/notice?tag=%EC%B1%84%EC%9A%A9%EC%A0%95%EB%B3%B4",
+            base_url="https://cse.snu.ac.kr/en/community/notice?tag=%EC%B1%84%EC%9A%A9%EC%A0%95%EB%B3%B4",
             school_name="서울대학교",
             driver=driver
         )
-        self.content_selector = (
-            "body > main > div > div > div.bg-neutral-50.px-5.pt-9.sm\\:pl-\\[100px\\].sm\\:pr-\\[340px\\].pb-\\[150px\\] > "
-            "div.flow-root.mb-10 > div > p"
-        )
-        self.title_selector = "html > body > main > div > div:nth-child(2) > div:nth-child(2) > ul > li:nth-child(1) > span:nth-child(2) > a"
-        self.date_selector = (
-            "body > main > div > div.relative.grow.bg-white.p-\\[1.75rem_1.25rem_4rem_1.25rem\\].sm\\:p-\\[2.75rem_360px_150px_100px\\] > "
-            "div.mb-10.mt-9.border-y.border-neutral-200.sm\\:mx-2\\.5 > ul > li:nth-child(1) > "
-            "span.sm\\:w-auto.sm\\:min-w-\\[7.125rem\\].tracking-wide.sm\\:pl-8.sm\\:pr-10"
-        )
+        # Multiple selectors for SNU-specific elements
+        self.content_selectors = [
+            ".flow-root",
+            ".mb-10",
+            "div[class*='flow-root']",
+            "main div div div div",
+            "article",
+            ".content"
+        ]
+        self.title_selectors = [
+            "ul li:first-child span a",
+            "li:first-child a",
+            "ul li a",
+            ".grow a",
+            "[href*='notice']",
+            "a[href*='view']"
+        ]
+        self.date_selectors = [
+            "ul li:first-child span:last-child",
+            "li:first-child span:not(:has(a))",
+            ".tracking-wide",
+            "span:contains('2024')",
+            "span:contains('2025')"
+        ]
+
+        # Set default selectors for BaseCrawler compatibility
+        self.content_selector = self.content_selectors[0]
+        self.title_selector = self.title_selectors[0]
+        self.date_selector = self.date_selectors[0]
+
+    def find_element_with_multiple_selectors(self, selectors, element_type="element"):
+        """Try multiple selectors until one works"""
+        for selector in selectors:
+            try:
+                elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                for element in elements:
+                    text = element.text.strip()
+                    if element_type == "title" and text and len(text) > 5:
+                        logging.info(f"Found title with selector '{selector}': {text}")
+                        return element
+                    elif element_type == "date" and text and ('2024' in text or '2025' in text):
+                        logging.info(f"Found date with selector '{selector}': {text}")
+                        return element
+                    elif element_type == "content" and text and len(text) > 100:
+                        logging.info(f"Found content with selector '{selector}': {text[:100]}...")
+                        return element
+                    elif element_type == "element" and text:
+                        return element
+            except Exception as e:
+                logging.warning(f"Selector '{selector}' failed: {e}")
+                continue
+        return None
+
+    def get_notice_content(self, notice_url):
+        """Override to use multiple content selectors"""
+        try:
+            logging.info(f"Fetching content from: {notice_url}")
+            self.driver.get(notice_url)
+            time.sleep(3)
+
+            content_element = self.find_element_with_multiple_selectors(
+                self.content_selectors,
+                "content"
+            )
+
+            if content_element:
+                content_text = content_element.text.strip()
+                logging.info(f"Successfully retrieved content from {notice_url}")
+                return content_text
+            else:
+                logging.warning("Content not found with any selector")
+                return "Content not found"
+
+        except Exception as e:
+            logging.error(f"Error getting notice content: {e}")
+            return "Content not found"
+
+    def crawl(self):
+        """Override crawl method to use multiple selectors"""
+        try:
+            logging.info(f"Starting crawl for {self.school_name}")
+            self.driver.get(self.base_url)
+            time.sleep(10)
+
+            try:
+                logging.info("Processing notice")
+
+                # Find title element using multiple selectors
+                title_element = self.find_element_with_multiple_selectors(
+                    self.title_selectors,
+                    "title"
+                )
+
+                if not title_element:
+                    logging.error("Could not find title element with any selector")
+                    # Debug: show available links
+                    try:
+                        all_links = self.driver.find_elements(By.TAG_NAME, "a")
+                        logging.info(f"Total links found: {len(all_links)}")
+                        for i, link in enumerate(all_links[:10]):
+                            href = link.get_attribute('href')
+                            text = link.text.strip()[:50]
+                            if href and 'notice' in href:
+                                logging.info(f"Notice link {i+1}: {text} -> {href}")
+                    except Exception as debug_e:
+                        logging.error(f"Debug failed: {debug_e}")
+                    return
+
+                title = title_element.text.strip()
+                logging.info(f"Found title: {title}")
+
+                # Find date element using multiple selectors
+                date_element = self.find_element_with_multiple_selectors(
+                    self.date_selectors,
+                    "date"
+                )
+
+                if date_element:
+                    date = date_element.text.strip()
+                    logging.info(f"Found date: {date}")
+                else:
+                    date = "Date not found"
+                    logging.warning("Could not find date with any selector")
+
+                # Get URL
+                href = title_element.get_attribute('href')
+                if not href:
+                    logging.warning("No URL found")
+                    return
+
+                # Handle relative URLs
+                from urllib.parse import urljoin
+                full_notice_url = urljoin(self.base_url, href)
+                logging.info(f"Processing URL: {full_notice_url}")
+
+                # Get content
+                content = self.get_notice_content(full_notice_url)
+
+                # Save notice
+                self.send_notice(title, content, full_notice_url, date, school=self.school_name)
+
+            except NoSuchElementException as e:
+                logging.error(f"Element not found: {e}")
+            except Exception as e:
+                logging.error(f"Error processing notice: {e}")
+
+        except Exception as e:
+            logging.error(f"Error during crawling: {e}")
 
 class KaistCrawler(BaseCrawler):
     def __init__(self, driver):
