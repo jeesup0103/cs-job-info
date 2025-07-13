@@ -67,7 +67,7 @@ async def root(
     # Calculate total pages
     total_pages = (total_notices + items_per_page - 1) // items_per_page
 
-    schools = ["성균관대학교", "연세대학교", "카이스트", "한양대학교"]  # Add all your schools here
+    schools = ["성균관대학교", "연세대학교", "카이스트", "서울대학교", "한양대학교"]  # Add all your schools here
     return templates.TemplateResponse(
         "index.html",
         {
@@ -104,7 +104,7 @@ async def search_notices(request: Request, q: str, page: int = 1, db: Session = 
     # Calculate total pages
     total_pages = (total_notices + items_per_page - 1) // items_per_page
 
-    schools = ["성균관대학교", "연세대학교", "카이스트", "한양대학교"]
+    schools = ["성균관대학교", "연세대학교", "카이스트", "서울대학교", "한양대학교"]
     return templates.TemplateResponse(
         "index.html",
         {
@@ -128,7 +128,7 @@ def get_notices(request: Request, db: Session = Depends(get_db)):
             "notices": notices,
             "current_page": 1,
             "total_pages": 1,
-            "schools": ["성균관대학교", "연세대학교", "카이스트", "한양대학교"]
+            "schools": ["성균관대학교", "연세대학교", "카이스트", "서울대학교", "한양대학교"]
         }
     )
 
