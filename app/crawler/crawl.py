@@ -485,15 +485,3 @@ class YonseiCrawler(BaseCrawler):
         self.content_selector = "#jwxe_main_content > div > div.board-wrap > div > dl.board-write-box.board-write-box-v03 > dd > div"
         self.title_selector = "#jwxe_main_content > div > div > div > table > tbody > tr:nth-child(1) > td.text-left > div.c-board-title-wrap > a"
         self.date_selector = "#jwxe_main_content > div > div > div > table > tbody > tr:nth-child(1) > td:nth-child(5)"
-
-
-class HanyangCrawler(BaseCrawler):
-    def __init__(self, driver):
-        super().__init__(
-            base_url="https://cs.hanyang.ac.kr/board/job_board.php",
-            school_name="한양대학교",
-            driver=driver
-        )
-        self.content_selector="#content_box > div > table.bbs_view > tbody > tr:nth-child(3) > td > table:nth-child(2) > tbody > tr > td",
-        self.title_selector="#content_box > div > table > tbody > tr:nth-child(1) > td.left > a",
-        self.date_selector="#content_box > div > table > tbody > tr:nth-child(1) > td:nth-child(5)",
